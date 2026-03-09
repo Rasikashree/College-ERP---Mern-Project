@@ -1,13 +1,19 @@
 import axios from "axios";
 
 // const API = axios.create({ baseURL: process.env.REACT_APP_SERVER_URL });
-const API = axios.create({ baseURL: "http://localhost:5001/" });
+const API = axios.create({ baseURL: "http://127.0.0.1:5001/" });
 
 API.interceptors.request.use((req) => {
-  if (localStorage.getItem("user")) {
-    req.headers.Authorization = `Bearer ${
-      JSON.parse(localStorage.getItem("user")).token
-    }`;
+  const rawUser = localStorage.getItem("user");
+  if (rawUser) {
+    try {
+      const parsedUser = JSON.parse(rawUser);
+      if (parsedUser?.token) {
+        req.headers.Authorization = `Bearer ${parsedUser.token}`;
+      }
+    } catch (error) {
+      localStorage.removeItem("user");
+    }
   }
   return req;
 });
@@ -66,6 +72,8 @@ export const addStudent = (student) =>
 export const getStudent = (student) =>
   API.post("/api/admin/getstudent", student);
 export const getNotice = (notice) => API.post("/api/admin/getnotice", notice);
+
+export const getAdminDashboard = () => API.get("/api/admin/dashboard");
 
 // Faculty
 

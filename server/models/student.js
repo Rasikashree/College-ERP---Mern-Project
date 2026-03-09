@@ -66,4 +66,8 @@ const studentSchema = new Schema({
   },
 });
 
+studentSchema.index({ username: 1 });
+studentSchema.index({ email: 1 });
+studentSchema.index({ department: 1, year: 1, section: 1 });
+
 export default mongoose.model("student", studentSchema);

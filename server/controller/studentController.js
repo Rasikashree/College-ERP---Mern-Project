@@ -11,7 +11,7 @@ export const studentLogin = async (req, res) => {
   const { username, password } = req.body;
   const errors = { usernameError: String, passwordError: String };
   try {
-    const existingStudent = await Student.findOne({ username });
+    const existingStudent = await Student.findOne({ username }).lean();
     if (!existingStudent) {
       errors.usernameError = "Student doesn't exist.";
       return res.status(404).json(errors);
@@ -34,7 +34,8 @@ export const studentLogin = async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    res.status(200).json({ result: existingStudent, token: token });
+    const { password: _password, __v, ...safeStudent } = existingStudent;
+    res.status(200).json({ result: safeStudent, token: token });
   } catch (error) {
     console.log(error);
   }

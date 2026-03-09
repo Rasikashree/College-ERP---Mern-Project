@@ -28,15 +28,21 @@ const AdminLogin = () => {
     }
   }, [store.errors]);
 
-  const login = (e) => {
+  const login = async (e) => {
     e.preventDefault();
     setLoading(true);
-    dispatch(adminSignIn({ username: username, password: password }, navigate));
+    await dispatch(
+      adminSignIn({ username: username, password: password }, navigate)
+    );
+    setLoading(false);
   };
 
   useEffect(() => {
-    if (store.errors) {
-      setLoading(false);
+    if (
+      store.errors?.usernameError ||
+      store.errors?.passwordError ||
+      store.errors?.backendError
+    ) {
       setUsername("");
       setPassword("");
     }
@@ -114,9 +120,9 @@ const AdminLogin = () => {
               messageColor="#fff"
             />
           )}
-          {(error.usernameError || error.passwordError) && (
+          {(error.usernameError || error.passwordError || error.backendError) && (
             <p className="text-red-500">
-              {error.usernameError || error.passwordError}
+              {error.usernameError || error.passwordError || error.backendError}
             </p>
           )}
         </form>

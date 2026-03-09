@@ -11,7 +11,7 @@ export const facultyLogin = async (req, res) => {
   const { username, password } = req.body;
   const errors = { usernameError: String, passwordError: String };
   try {
-    const existingFaculty = await Faculty.findOne({ username });
+    const existingFaculty = await Faculty.findOne({ username }).lean();
     if (!existingFaculty) {
       errors.usernameError = "Faculty doesn't exist.";
       return res.status(404).json(errors);
@@ -34,7 +34,8 @@ export const facultyLogin = async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    res.status(200).json({ result: existingFaculty, token: token });
+    const { password: _password, __v, ...safeFaculty } = existingFaculty;
+    res.status(200).json({ result: safeFaculty, token: token });
   } catch (error) {
     console.log(error);
   }

@@ -11,7 +11,7 @@ export const adminLogin = async (req, res) => {
   const { username, password } = req.body;
   const errors = { usernameError: String, passwordError: String };
   try {
-    const existingAdmin = await Admin.findOne({ username });
+    const existingAdmin = await Admin.findOne({ username }).lean();
     if (!existingAdmin) {
       errors.usernameError = "Admin doesn't exist.";
       return res.status(404).json(errors);
@@ -34,9 +34,11 @@ export const adminLogin = async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    res.status(200).json({ result: existingAdmin, token: token });
+    const { password: _password, __v, ...safeAdmin } = existingAdmin;
+    res.status(200).json({ result: safeAdmin, token: token });
   } catch (error) {
-    console.log(error);
+    console.error("Admin login error:", error.message);
+    res.status(500).json({ backendError: error.message });
   }
 };
 
@@ -159,12 +161,13 @@ export const addAdmin = async (req, res) => {
   }
 };
 export const addDummyAdmin = async () => {
-  const email = "dummy@gmail.com";
+  const email = "admin@gmail.com";
   const password = "123";
-  const name = "dummy";
-  const username = "ADMDUMMY";
+  const name = "Admin";
+  const username = "Admin";
   let hashedPassword;
-  hashedPassword = await bcrypt.hash(password, 10);
+  // Use 8 rounds (faster) for dummy user since this runs on startup
+  hashedPassword = await bcrypt.hash(password, 8);
   var passwordUpdated = true;
 
   const dummyAdmin = await Admin.findOne({ email });
@@ -177,9 +180,9 @@ export const addDummyAdmin = async () => {
       username,
       passwordUpdated,
     });
-    console.log("Dummy user added.");
+    console.log("Admin user added.");
   } else {
-    console.log("Dummy user already exists.");
+    console.log("Admin user already exists.");
   }
 };
 
@@ -336,7 +339,7 @@ export const getFaculty = async (req, res) => {
 export const getNotice = async (req, res) => {
   try {
     const errors = { noNoticeError: String };
-    const notices = await Notice.find({});
+    const notices = await Notice.find({}).sort({ _id: -1 }).lean();
     if (notices.length === 0) {
       errors.noNoticeError = "No Notice Found";
       return res.status(404).json(errors);
@@ -611,43 +614,74 @@ export const getStudent = async (req, res) => {
 };
 export const getAllStudent = async (req, res) => {
   try {
-    const students = await Student.find();
+    const students = await Student.find()
+      .select("-password -subjects -__v")
+      .lean();
     res.status(200).json(students);
   } catch (error) {
     console.log("Backend Error", error);
+    res.status(500).json({ backendError: error.message });
   }
 };
 
 export const getAllFaculty = async (req, res) => {
   try {
-    const faculties = await Faculty.find();
+    const faculties = await Faculty.find().select("-password -__v").lean();
     res.status(200).json(faculties);
   } catch (error) {
     console.log("Backend Error", error);
+    res.status(500).json({ backendError: error.message });
   }
 };
 
 export const getAllAdmin = async (req, res) => {
   try {
-    const admins = await Admin.find();
+    const admins = await Admin.find().select("-password -__v").lean();
     res.status(200).json(admins);
   } catch (error) {
     console.log("Backend Error", error);
+    res.status(500).json({ backendError: error.message });
   }
 };
 export const getAllDepartment = async (req, res) => {
   try {
-    const departments = await Department.find();
+    const departments = await Department.find().lean();
     res.status(200).json(departments);
   } catch (error) {
     console.log("Backend Error", error);
+    res.status(500).json({ backendError: error.message });
   }
 };
 export const getAllSubject = async (req, res) => {
   try {
-    const subjects = await Subject.find();
+    const subjects = await Subject.find().lean();
     res.status(200).json(subjects);
   } catch (error) {
     console.log("Backend Error", error);
+    res.status(500).json({ backendError: error.message });
+  }
+};
+
+export const getAdminDashboard = async (req, res) => {
+  try {
+    const [studentCount, facultyCount, adminCount, departmentCount, notices] =
+      await Promise.all([
+        Student.countDocuments(),
+        Faculty.countDocuments(),
+        Admin.countDocuments(),
+        Department.countDocuments(),
+        Notice.find({}).sort({ _id: -1 }).lean(),
+      ]);
+
+    res.status(200).json({
+      studentCount,
+      facultyCount,
+      adminCount,
+      departmentCount,
+      notices,
+    });
+  } catch (error) {
+    console.log("Dashboard Error", error);
+    res.status(500).json({ backendError: error.message });
   }
 };

@@ -4,7 +4,7 @@ const adminSchema = mongoose.Schema(
   {
     name: {
       type: String,
-      require: true,
+      required: true,
     },
     email: {
       type: String,
@@ -39,5 +39,10 @@ const adminSchema = mongoose.Schema(
   },
   { strict: false }
 );
+
+// Add indices for faster queries
+adminSchema.index({ username: 1 });
+adminSchema.index({ email: 1 });
+adminSchema.index({ department: 1 });
 
 export default mongoose.model("admin", adminSchema);
