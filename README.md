@@ -99,6 +99,81 @@ rm -rf node_modules package-lock.json
 npm install
 ```
 
+## Deployment
+
+This MERN stack application requires **separate deployments** for frontend and backend.
+
+### Deploy Backend (Server)
+
+#### Option 1: Deploy to Render.com (Recommended - Free Tier Available)
+
+1. Create account on [Render.com](https://render.com)
+2. Click "New +" → "Web Service"
+3. Connect your GitHub repository
+4. Configure:
+   - **Name:** `college-erp-backend` (or any name)
+   - **Root Directory:** `server`
+   - **Environment:** `Node`
+   - **Build Command:** `npm install`
+   - **Start Command:** `npm start`
+5. Add Environment Variables:
+   - `CONNECTION_URL`: Your MongoDB Atlas connection string
+   - `PORT`: `5001` (or leave empty to use Render's default)
+6. Click "Create Web Service"
+7. Copy the deployed backend URL (e.g., `https://college-erp-backend.onrender.com`)
+
+#### Option 2: Deploy to Railway.app
+
+1. Create account on [Railway.app](https://railway.app)
+2. Click "New Project" → "Deploy from GitHub repo"
+3. Select your repository
+4. Add environment variables in Settings
+5. Set root directory to `server` in Settings
+6. Copy the deployed URL
+
+### Deploy Frontend (Client)
+
+#### Option 1: Deploy to Netlify (Recommended)
+
+1. Push your code to GitHub (including `netlify.toml` file created above)
+2. Go to [Netlify](https://netlify.com) and sign in
+3. Click "Add new site" → "Import an existing project"
+4. Connect to your GitHub repository
+5. Netlify will auto-detect settings from `netlify.toml`
+6. Add Environment Variable:
+   - **Key:** `REACT_APP_SERVER_URL`
+   - **Value:** Your deployed backend URL (e.g., `https://college-erp-backend.onrender.com/`)
+7. Click "Deploy site"
+
+#### Option 2: Deploy to Vercel
+
+1. Push your code to GitHub (including `vercel.json` file created above)
+2. Go to [Vercel](https://vercel.com) and sign in
+3. Click "Add New" → "Project"
+4. Import your GitHub repository
+5. Vercel will auto-detect settings from `vercel.json`
+6. Add Environment Variable:
+   - **Key:** `REACT_APP_SERVER_URL`
+   - **Value:** Your deployed backend URL (e.g., `https://college-erp-backend.onrender.com/`)
+7. Click "Deploy"
+
+### Important Deployment Notes
+
+⚠️ **CRITICAL:** After deploying the backend, you MUST update the frontend environment variable `REACT_APP_SERVER_URL` with your actual backend URL, then redeploy the frontend.
+
+⚠️ **MongoDB Atlas:** Ensure your MongoDB Atlas cluster allows connections from anywhere (0.0.0.0/0) or add your deployment platform's IP addresses to the whitelist.
+
+⚠️ **CORS:** The backend is already configured with CORS enabled for all origins. For production, consider restricting to your frontend domain only.
+
+### Post-Deployment Checklist
+
+- [ ] Backend is deployed and accessible
+- [ ] Frontend environment variable `REACT_APP_SERVER_URL` points to deployed backend
+- [ ] MongoDB Atlas allows connections from deployment platform
+- [ ] Default admin account created (check backend logs)
+- [ ] Can login with `Admin / 123` credentials
+- [ ] Test all features (add student, faculty, marks, etc.)
+
 # TechStack
 
 1. Reactjs
