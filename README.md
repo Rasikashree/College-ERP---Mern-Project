@@ -2,15 +2,102 @@
 
 College ERP using MERN Stack
 
-# Setup
-1. Create a .env file in server folder.
-2. Copy the content of .env.example to the newly created .env file
-3. Change the MONGODB_URI to your MongoDB atlas URI
-4. Open a terminal in client folder and run "npm run start"
-5. Open another terminal in server folder and run "npm run start"
-6. Go to "localhost:3000/login/adminlogin"
-7. After successfully running the server, a dummy admin should be created.
-8. Dummy admin username = ADMDUMMY, password = 123
+# Setup and Installation
+
+## Prerequisites
+- Node.js (v14 or higher)
+- npm or yarn
+- MongoDB Atlas account (or local MongoDB installation)
+
+## Installation Steps
+
+### 1. Clone the Repository
+```bash
+git clone <repository-url>
+cd College-Erp-main
+```
+
+### 2. Install Dependencies
+
+#### Install Server Dependencies
+```bash
+cd server
+npm install
+```
+
+#### Install Client Dependencies
+```bash
+cd ../client
+npm install
+```
+
+### 3. Environment Configuration
+
+#### Server Environment Setup
+1. Navigate to the `server` folder
+2. Create a `.env` file in the server folder
+3. Copy the content from `.env.example`:
+```env
+CONNECTION_URL=mongodb+srv://<username>:<password>@<cluster>/<db>?retryWrites=true&w=majority
+PORT=5001
+```
+4. Replace `<username>`, `<password>`, `<cluster>`, and `<db>` with your actual MongoDB Atlas credentials
+5. Keep the PORT as `5001` (or change both server and client API base URL accordingly)
+
+## Running the Project
+
+**Important:** You need to run both the backend server and frontend client simultaneously in separate terminals.
+
+### Terminal 1 - Start Backend Server
+```bash
+cd server
+npm start
+```
+The server will start on `http://localhost:5001`
+
+### Terminal 2 - Start Frontend Client
+```bash
+cd client
+npm run start
+```
+The client will start on `http://localhost:3000` and open in your default browser.
+
+## Default Login Credentials
+
+After successfully running the server for the first time, a default admin account is automatically created:
+
+**Admin Login:**
+- Username: `Admin`
+- Password: `123`
+- Login URL: `http://localhost:3000/login/adminlogin`
+
+**Note:** The username is case-sensitive (capital 'A' in Admin).
+
+## Accessing the Application
+
+1. **Admin Portal:** `http://localhost:3000/login/adminlogin`
+2. **Faculty Portal:** `http://localhost:3000/login/facultylogin`
+3. **Student Portal:** `http://localhost:3000/login/studentlogin`
+
+## Troubleshooting
+
+### Login Issues
+- Ensure both backend (port 5001) and frontend (port 3000) servers are running
+- Clear browser cache and refresh (`Ctrl + Shift + R`)
+- Check browser console and network tab for error details
+- Verify MongoDB connection string in `.env` file
+
+### Port Already in Use
+If you get "Port already in use" error:
+- Stop any existing Node processes on that port
+- Or change the PORT in server `.env` and update API base URL in `client/src/redux/api/index.js`
+
+### Dependencies Issues
+```bash
+# Clear node_modules and reinstall
+rm -rf node_modules package-lock.json
+npm install
+```
 
 # TechStack
 
