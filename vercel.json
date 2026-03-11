@@ -1,5 +1,5 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "$schema": "https://college-erp-opal.vercel.app/",
   "buildCommand": "cd client && npm install && npm run build",
   "outputDirectory": "client/build",
   "framework": "create-react-app",
