@@ -123,6 +123,7 @@ const Body = () => {
               value={value.section}
               onChange={(e) => setValue({ ...value, section: e.target.value })}>
               <MenuItem value="">None</MenuItem>
+              <MenuItem value="NA">NA</MenuItem>
               <MenuItem value="1">1</MenuItem>
               <MenuItem value="2">2</MenuItem>
               <MenuItem value="3">3</MenuItem>
