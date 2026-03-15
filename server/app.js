@@ -8,9 +8,34 @@ import facultyRoutes from "./routes/facultyRoutes.js";
 
 const app = express();
 
+const getAllowedOrigins = () => {
+  const origins = [
+    process.env.FRONTEND_URL,
+    "http://localhost:3000",
+    "http://localhost:5173",
+  ];
+
+  return origins.filter(Boolean);
+};
+
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
-app.use(cors());
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      const allowedOrigins = getAllowedOrigins();
+
+      // Allow non-browser requests and approved frontend URLs.
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+  })
+);
 
 app.use("/api/admin", adminRoutes);
 app.use("/api/faculty", facultyRoutes);
